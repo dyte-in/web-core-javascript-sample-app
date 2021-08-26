@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dyte Web Core</title>
+
+    <script>
+        var exports = {};
+    </script>
+    <script src="https://cdn.dyte.in/core/dyte-0.0.19.js"></script>
+</head>
+
+<body>
+    <input type="text" placeholder="Room Name" name="roomName" id="roomName">
+    <button type="button" onclick="joinRoom()">Join Room</button>
+    <button id="audio-status" onclick="toggleAudio()">Toggle Audio</button>
+    <button id="video-status" onclick="toggleVideo()">Toggle Video</button>
+    <br />
+    <br />
+    <br />
+
+    <div id="self-video-container"></div>
+    <br />
+    <br />
+    <br />
+    <div id="participants-video-container"></div>
+
+    </div>
+
+    <script>
+        let meeting;
+
+        async function toggleAudio() {
+            if (meeting.self.audioEnabled) {
+                await meeting.self.disableAudio();
+            } else {
+                await meeting.self.enableAudio();
+            }
+        }
+
+        async function toggleVideo() {
+            if (meeting.self.videoEnabled) {
+                await meeting.self.disableVideo();
+            } else {
+                await meeting.self.enableVideo();
+            }
+        }
+
+        async function createClient() {
+            const roomName = document.getElementById('roomName').value;
+            const apiBase = 'https://api.cluster.dyte.in';
+
+            // For the purpose of creating a sample, we use an anonymous auth token.
+            // This must be replaced with the auth token received from the API endpoint.
+            const { authToken } = await (await fetch(`${apiBase}/auth/anonymous`)).json();
+
+            meeting = await DyteClient.init({
+                roomName,
+                authToken,
+                defaults: {
+                    audio: false,
+                }
+            });
+        }
+
+        async function setupSelf() {
+            const video = document.createElement('video');
+            video.id = 'self-video';
+            const selfVideoContainer = document.getElementById('self-video-container');
+
+            if (meeting.self.videoTrack) {
+                selfVideoContainer.innerHTML = '';
+                console.log(JSON.stringify(meeting.self, null, 4));
+
+                const stream = new MediaStream();
+                stream.addTrack(meeting.self.videoTrack);
+
+                video.width = 500;
+                video.height = 300;
+                video.srcObject = stream;
+            }
+
+            selfVideoContainer.appendChild(video);
+            await video.play();
+
+            meeting.self.on('videoUpdate', async ({ videoEnabled, videoTrack }) => {
+                if (videoEnabled) {
+                    const video = document.getElementById('self-video');
+                    const stream = new MediaStream();
+                    stream.addTrack(videoTrack);
+
+                    video.srcObject = stream;
+                    await video.play();
+                } else {
+                    const video = document.getElementById('self-video');
+                    if (!video) return;
+                    video.srcObject = undefined;
+                }
+            })
+        }
+
+        function onParticipantJoined(participant) {
+            const participants = document.getElementById("participants-video-container");
+            const div = document.createElement('div');
+            div.id = participant.id;
+
+            const nameElem = document.createElement('h3');
+            nameElem.innerHTML = `Name - ${participant.name}`;
+
+            div.appendChild(nameElem);
+
+            const video = document.createElement('video');
+            video.id = `video-${participant.id}`;
+            video.width = 500;
+            video.height = 300;
+
+            const audio = document.createElement('audio');
+            audio.id = `audio-${participant.id}`;
+            audio.width = 500;
+            audio.height = 300;
+
+            div.appendChild(video);
+            div.appendChild(audio);
+
+            participants.appendChild(div);
+        }
+
+        function setupParticipants() {
+            meeting.participants.joined.toArray().forEach(onParticipantJoined);
+
+            meeting.participants.joined.on('participantJoined', onParticipantJoined);
+
+            meeting.participants.joined.on('participantLeft', (participant) => {
+                const participantDiv = document.getElementById(participant.id);
+                if (participantDiv) participantDiv.remove();
+            });
+
+            meeting.participants.joined.on('videoUpdate', async (participant) => {
+                if (participant.videoEnabled) {
+                    const video = document.getElementById(`video-${participant.id}`);
+
+                    const stream = new MediaStream();
+                    stream.addTrack(participant.videoTrack);
+
+                    video.srcObject = stream;
+                    await video.play()
+                } else {
+                    const video = document.getElementById(`video-${participant.id}`);
+                    if (!video) return;
+                    video.srcObject = null;
+                }
+            });
+
+            meeting.participants.joined.on('audioUpdate', async (participant) => {
+                if (participant.audioEnabled) {
+                    const audio = document.getElementById(`audio-${participant.id}`);
+
+                    const stream = new MediaStream();
+                    stream.addTrack(participant.audioTrack);
+
+                    audio.srcObject = stream;
+                    await audio.play()
+                } else {
+                    const audio = document.getElementById(`audio-${participant.id}`);
+                    if (audio) return;
+                    audio.srcObject = null;
+                }
+            });
+        }
+
+        async function joinRoom() {
+            await createClient();
+            meeting.self.on('roomJoined', setupParticipants);
+            await setupSelf();
+            await meeting.joinRoom();
+        }
+
+    </script>
+</body>
+
+</html>
