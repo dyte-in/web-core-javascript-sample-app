@@ -4,19 +4,19 @@
     <img src="https://dyte-uploads.s3.ap-south-1.amazonaws.com/dyte-logo-dark.svg" alt="Logo" width="80">
   </a>
 
-  <h3 align="center">docs-template by dyte</h3>
+  <h3 align="center">Web Core Integration Sample</h3>
 
   <p align="center">
-    ADD_DESCRIPTION_HERE
+    Examples on integrating Dyte Web Core with web applications.
     <br />
     <a href="https://docs.dyte.in"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://app.dyte.in">View Demo</a>
     ·
-    <a href="https://github.com/dyte-in/docs-template/issues">Report Bug</a>
+    <a href="https://docs.dyte.in/discuss">Report Bug</a>
     ·
-    <a href="https://github.com/dyte-in/docs-template/issues">Request Feature</a>
+    <a href="https://docs.dyte.in/discuss">Request Feature</a>
   </p>
 </p>
 
@@ -42,33 +42,24 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
-Here's a blank template to get started:
-**To avoid retyping too much info. Do a search and replace with your text editor for the following:**
-`docs-template`
+This repository consists of sample apps for demonstrating how to integrate [@dytesdk/web-core](https://www.npmjs.com/package/@dytesdk/web-core) with web applications.
 
 
 ### Built With
 
-* []()
-* []()
-* []()
-
+* [Dyte Web Core](https://www.npmjs.com/package/@dytesdk/web-core)
 
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To get a local copy up and running follow these simple steps.
+To run the demo website, the `index.html` file must be served. One way this can be done is using a Python simple HTTP server.
 
-### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-```sh
-npm install npm@latest -g
+```bash
+python3 -m http.server 3000
 ```
+
+Now, the demo will be visible on http://localhost:3000.
 
 ### Installation
  
@@ -76,19 +67,30 @@ npm install npm@latest -g
 ```sh
 git clone https://github.com/dyte-in/docs-template.git
 ```
-2. Install NPM packages
-```sh
-npm install
-```
 
+2. Serve the index.html file.
+```sh
+python3 -m http.server 3000
+```
 
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+The Dyte Web Core SDK can be installed using npm, or can be set up using a CDN.
 
-_For more examples, please refer to the [Documentation](https://example.com)._
+### Using npm
+```sh
+npm install @dytesdk/web-core
+```
+
+### Using the CDN
+```html
+<script src="https://cdn.dyte.in/core/dyte-0.0.19.js"></script>
+```
+> Note: The CDN file is named in the following manner: `dyte-${version}.js`. To get the latest version (which is subject to breaking changes), you may use https://cdn.dyte.in/core/dyte.js.
+
+_Please refer to the [Documentation](./docs/api.md)._
 
 
 
