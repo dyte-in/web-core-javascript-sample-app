@@ -4,7 +4,7 @@
     <img src="https://dyte-uploads.s3.ap-south-1.amazonaws.com/dyte-logo-dark.svg" alt="Logo" width="80">
   </a>
 
-  <h3 align="center">Web Core Integration Sample</h3>
+  <h3 align="center">Web Core Javascript Sample App</h3>
 
   <p align="center">
     Examples on integrating Dyte Web Core with web applications.

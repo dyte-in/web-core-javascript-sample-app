@@ -1,6 +1,6 @@
-# Low Level SDK
+# web-core SDK
 
-The low level SDK provides Dyte's core functionality, while letting a developer build a custom UI over it.
+The web-core SDK provides Dyte's core functionality, while letting a developer build a custom UI over it.
 
 # Table of Contents
 
