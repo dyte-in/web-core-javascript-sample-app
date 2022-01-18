@@ -10,6 +10,7 @@
     <script>
         var exports = {};
     </script>
+    <!-- <script src="https://cdn.dyte.in/core/dyte-0.0.19.js"></script> -->
     <script src="https://cdn.dyte.in/core/dyte-0.0.19.js"></script>
 </head>
 
@@ -49,9 +50,8 @@
             }
         }
 
-        async function createClient() {
+        async function createClient(apiBase = 'https://api.cluster.dyte.in') {
             const roomName = document.getElementById('roomName').value;
-            const apiBase = 'https://api.cluster.dyte.in';
 
             // For the purpose of creating a sample, we use an anonymous auth token.
             // This must be replaced with the auth token received from the API endpoint.
@@ -62,7 +62,8 @@
                 authToken,
                 defaults: {
                     audio: false,
-                }
+                },
+                apiBase,
             });
         }
 
@@ -107,6 +108,8 @@
             const div = document.createElement('div');
             div.id = participant.id;
 
+            console.log(participant.videoTrack);
+
             const nameElem = document.createElement('h3');
             nameElem.innerHTML = `Name - ${participant.name}`;
 
@@ -129,16 +132,16 @@
         }
 
         function setupParticipants() {
-            meeting.participants.joined.toArray().forEach(onParticipantJoined);
+            meeting.participants.active.toArray().forEach(onParticipantJoined);
 
-            meeting.participants.joined.on('participantJoined', onParticipantJoined);
+            meeting.participants.active.on('participantJoined', onParticipantJoined);
 
-            meeting.participants.joined.on('participantLeft', (participant) => {
+            meeting.participants.active.on('participantLeft', (participant) => {
                 const participantDiv = document.getElementById(participant.id);
                 if (participantDiv) participantDiv.remove();
             });
 
-            meeting.participants.joined.on('videoUpdate', async (participant) => {
+            meeting.participants.active.on('videoUpdate', async (participant) => {
                 if (participant.videoEnabled) {
                     const video = document.getElementById(`video-${participant.id}`);
 
@@ -154,7 +157,7 @@
                 }
             });
 
-            meeting.participants.joined.on('audioUpdate', async (participant) => {
+            meeting.participants.active.on('audioUpdate', async (participant) => {
                 if (participant.audioEnabled) {
                     const audio = document.getElementById(`audio-${participant.id}`);
 
