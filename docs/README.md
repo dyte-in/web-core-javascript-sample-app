@@ -2,6 +2,8 @@
 
 Dyte provides a web-core SDK that gives you low-level access to all the functionality, but allows you to build a custom UI over it. With the help of the web-core SDK, you can get access to media streams, chat, polls, etc. using various methods and member variables of the `DyteClient` class.
 
+> Note: Check out [api.md](./api.md) for details about each method and object.
+
 The `DyteClient` is the root class of the SDK. It is the main entry point of the SDK. It is the only class that you need to instantiate in order to use the SDK. To instantiate `DyteClient`, you can run the following command:
 
 ```ts
